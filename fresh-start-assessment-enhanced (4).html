@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fresh Start Assessment Text</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.normal-contrast {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        body.high-contrast {
+            background-color: #000;
+            color: #ffff00;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid;
+        }
+
+        body.normal-contrast .header {
+            border-bottom-color: #ddd;
+        }
+
+        body.high-contrast .header {
+            border-bottom-color: #ffff00;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .student-info {
+            margin-bottom: 15px;
+        }
+
+        .student-info input {
+            padding: 8px 12px;
+            font-size: 0.95em;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            width: 250px;
+        }
+
+        body.high-contrast .student-info input {
+            background: #333;
+            color: #ffff00;
+            border-color: #ffff00;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        input[type="range"] {
+            width: 150px;
+        }
+
+        .text-size-display {
+            font-size: 0.85em;
+            font-weight: normal;
+        }
+
+        .passage-container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-height: 400px;
+            transition: background-color 0.3s, color 0.3s;
+            overflow-wrap: break-word;
+        }
+
+        body.high-contrast .passage-container {
+            background: #000;
+            box-shadow: 0 2px 8px rgba(255,255,0,0.3);
+            border: 2px solid #ffff00;
+        }
+
+        .passage-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .passage-text {
+            line-height: 1.8;
+            font-size: 16px;
+            transition: font-size 0.2s;
+        }
+
+        body.high-contrast .passage-text {
+            color: #ffff00;
+        }
+
+        body.normal-contrast .passage-text {
+            color: #000;
+        }
+
+        .word {
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+
+        .word:hover {
+            background: rgba(255, 193, 7, 0.3);
+        }
+
+        .word.unknown {
+            background: #ff9800;
+            color: white;
+            font-weight: 600;
+        }
+
+        body.high-contrast .word.unknown {
+            background: #ff6600;
+            color: #000;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1em;
+            border: 2px solid;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        body.normal-contrast button {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        body.normal-contrast button:hover {
+            background: #45a049;
+            border-color: #45a049;
+        }
+
+        body.normal-contrast button:disabled {
+            background: #ccc;
+            border-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        body.high-contrast button {
+            background: #ffff00;
+            color: #000;
+            border-color: #ffff00;
+        }
+
+        body.high-contrast button:hover {
+            background: #fff;
+            border-color: #fff;
+        }
+
+        body.high-contrast button:disabled {
+            background: #666;
+            color: #333;
+            border-color: #666;
+            cursor: not-allowed;
+        }
+
+        .teacher-controls {
+            position: fixed !important;
+            top: 20px !important;
+            right: 20px !important;
+            background: rgba(100, 100, 100, 0.25);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            min-width: 180px;
+            z-index: 9999;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+
+        .teacher-controls:hover {
+            opacity: 1;
+        }
+
+        .stopwatch {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .timer-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .timer-buttons button {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+
+        .report-button {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 0.9em;
+        }
+
+        body.high-contrast .teacher-controls {
+            background: rgba(255, 255, 0, 0.2);
+        }
+
+        .progress-indicator {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        /* Toggle Switch for High Contrast */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #ffff00;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+            background-color: #000;
+        }
+
+        .instruction-text {
+            font-size: 0.75em;
+            text-align: center;
+            opacity: 0.6;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="normal-contrast">
+    <div class="container">
+        <div class="header">
+            <h1>Fresh Start Assessment Text</h1>
+            
+            <div class="student-info">
+                <input type="text" id="student-name" placeholder="Student Name (optional)">
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="contrast-toggle">High Contrast</label>
+                    <label class="switch">
+                        <input type="checkbox" id="contrast-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                
+                <div class="control-group">
+                    <label for="text-size">
+                        Text Size: <span class="text-size-display" id="size-display">Medium</span>
+                    </label>
+                    <input type="range" id="text-size" min="12" max="64" value="16" step="2">
+                </div>
+            </div>
+        </div>
+
+        <div class="passage-container">
+            <div id="passage-content"></div>
+            
+            <div class="navigation">
+                <button id="prev-btn" disabled>Previous</button>
+                <button id="next-btn">Next</button>
+            </div>
+            
+            <div class="progress-indicator" id="progress"></div>
+            <div class="instruction-text">Teacher: Click on words the student doesn't know</div>
+        </div>
+    </div>
+
+    <div class="teacher-controls">
+        <div class="stopwatch" id="stopwatch">00:00.0</div>
+        <div class="timer-buttons">
+            <button id="start-btn">Start</button>
+            <button id="stop-btn">Stop</button>
+            <button id="reset-btn">Reset</button>
+        </div>
+        <button class="report-button" id="report-btn">Generate Report</button>
+    </div>
+
+    <script>
+        const passages = [
+            {
+                title: "Passage 1 (Module 16)",
+                text: "Drink this … Ha! You are shrinking, shrinking … You are as small as a pea. Let me pick you up and put you on top of this beam. Stop screaming. No one will come to help you. Look – a skinny black leg! Three – six – seven – and one more! Start spinning, little one! Spin, spin for the rest of your days!"
+            },
+            {
+                title: "Passage 2 (Module 26)",
+                text: "I'm in hospital. They're going to put a cast on my leg. They've said I can play football when my leg's healed. Some of the boys from school have been to visit me, which was really nice. They brought me some comics and loads of chocolates. It's funny – I'm missing being at school already. It is so boring lying here."
+            },
+            {
+                title: "Passage 3 (Module 32)",
+                text: "We travelled towards open countryside outside the city. My cart was loaded with valuables, fruit and vegetables. I urged my donkey on. I knew he was capable of moving quickly over rough ground. But, as we crossed the marketplace, where traders were packing up their stalls, the ground shifted beneath us. I lost control of the cart and plunged forward."
+            },
+            {
+                title: "Exit Passage",
+                subtitle: "(adapted from The Wind in the Willows by Kenneth Grahame)",
+                text: "They waited patiently for what seemed a very long time, stamping in the snow to keep their feet warm. At last they heard the sound of slow shuffling footsteps approaching the door … There was the noise of a bolt shot back, and the door opened a few inches, enough to show a long snout and a pair of sleepy blinking eyes. \"Now, the very next time this happens,\" said a gruff and suspicious voice, \"I shall be exceedingly angry. Who is it this time, disturbing people on such a night?\" \"Oh, Badger,\" cried the Rat, \"let us in, please ...\" ."
+            }
+        ];
+
+        let currentPassage = 0;
+        let startTime = null;
+        let timerInterval = null;
+        let elapsedTime = 0;
+        let isRunning = false;
+        
+        // Data tracking
+        let passageData = passages.map((p, index) => ({
+            passageNumber: index + 1,
+            title: p.title,
+            unknownWords: [],
+            timeSpent: 0,
+            completed: false
+        }));
+
+        // Elements
+        const contrastToggle = document.getElementById('contrast-toggle');
+        const textSizeSlider = document.getElementById('text-size');
+        const sizeDisplay = document.getElementById('size-display');
+        const passageContent = document.getElementById('passage-content');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progress = document.getElementById('progress');
+        const stopwatchDisplay = document.getElementById('stopwatch');
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const reportBtn = document.getElementById('report-btn');
+        const studentNameInput = document.getElementById('student-name');
+
+        // High Contrast Toggle
+        contrastToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.remove('normal-contrast');
+                document.body.classList.add('high-contrast');
+            } else {
+                document.body.classList.remove('high-contrast');
+                document.body.classList.add('normal-contrast');
+            }
+        });
+
+        // Text Size Slider
+        textSizeSlider.addEventListener('input', function() {
+            const size = this.value;
+            const passageText = document.querySelector('.passage-text');
+            if (passageText) {
+                passageText.style.fontSize = size + 'px';
+            }
+            
+            // Update size display
+            if (size <= 14) {
+                sizeDisplay.textContent = 'Small';
+            } else if (size <= 20) {
+                sizeDisplay.textContent = 'Medium';
+            } else if (size <= 32) {
+                sizeDisplay.textContent = 'Large';
+            } else if (size <= 48) {
+                sizeDisplay.textContent = 'Extra Large';
+            } else {
+                sizeDisplay.textContent = 'Huge';
+            }
+        });
+
+        // Word click handler
+        function toggleUnknownWord(wordElement, word) {
+            const isUnknown = wordElement.classList.contains('unknown');
+            
+            if (isUnknown) {
+                // Remove from unknown words
+                wordElement.classList.remove('unknown');
+                const index = passageData[currentPassage].unknownWords.indexOf(word);
+                if (index > -1) {
+                    passageData[currentPassage].unknownWords.splice(index, 1);
+                }
+            } else {
+                // Add to unknown words
+                wordElement.classList.add('unknown');
+                if (!passageData[currentPassage].unknownWords.includes(word)) {
+                    passageData[currentPassage].unknownWords.push(word);
+                }
+            }
+        }
+
+        // Display Passage
+        function displayPassage() {
+            const passage = passages[currentPassage];
+            let html = `<div class="passage-title">${passage.title}</div>`;
+            
+            if (passage.subtitle) {
+                html += `<div class="passage-title" style="font-size: 0.9em; font-weight: normal; margin-top: -15px; margin-bottom: 25px;">${passage.subtitle}</div>`;
+            }
+            
+            // Split text into words and make them clickable
+            const words = passage.text.split(/(\s+|[.,;:!?"…—])/);
+            const clickableWords = words.map(word => {
+                if (word.trim() && /[a-zA-Z]/.test(word)) {
+                    const cleanWord = word.replace(/[.,;:!?"…—]/g, '');
+                    const isUnknown = passageData[currentPassage].unknownWords.includes(cleanWord);
+                    return `<span class="word ${isUnknown ? 'unknown' : ''}" data-word="${cleanWord}">${word}</span>`;
+                }
+                return word;
+            }).join('');
+            
+            html += `<div class="passage-text" style="font-size: ${textSizeSlider.value}px;">${clickableWords}</div>`;
+            
+            passageContent.innerHTML = html;
+            
+            // Add click listeners to words
+            document.querySelectorAll('.word').forEach(wordEl => {
+                wordEl.addEventListener('click', function() {
+                    const word = this.getAttribute('data-word');
+                    toggleUnknownWord(this, word);
+                });
+            });
+            
+            // Update navigation buttons
+            prevBtn.disabled = currentPassage === 0;
+            nextBtn.disabled = currentPassage === passages.length - 1;
+            
+            // Update progress
+            progress.textContent = `Passage ${currentPassage + 1} of ${passages.length}`;
+        }
+
+        // Navigation with time tracking
+        function saveCurrentPassageTime() {
+            if (isRunning) {
+                const currentTime = Date.now() - startTime;
+                passageData[currentPassage].timeSpent += currentTime;
+                passageData[currentPassage].completed = true;
+                // Reset for next passage
+                startTime = Date.now();
+                elapsedTime = 0;
+            }
+        }
+
+        prevBtn.addEventListener('click', function() {
+            if (currentPassage > 0) {
+                saveCurrentPassageTime();
+                currentPassage--;
+                displayPassage();
+            }
+        });
+
+        nextBtn.addEventListener('click', function() {
+            if (currentPassage < passages.length - 1) {
+                saveCurrentPassageTime();
+                currentPassage++;
+                displayPassage();
+            }
+        });
+
+        // Stopwatch Functions
+        function updateStopwatch() {
+            const now = Date.now();
+            elapsedTime = now - startTime;
+            
+            const minutes = Math.floor(elapsedTime / 60000);
+            const seconds = Math.floor((elapsedTime % 60000) / 1000);
+            const deciseconds = Math.floor((elapsedTime % 1000) / 100);
+            
+            stopwatchDisplay.textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${deciseconds}`;
+        }
+
+        startBtn.addEventListener('click', function() {
+            if (!isRunning) {
+                startTime = Date.now();
+                timerInterval = setInterval(updateStopwatch, 100);
+                isRunning = true;
+                startBtn.textContent = 'Resume';
+            }
+        });
+
+        stopBtn.addEventListener('click', function() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                const currentTime = Date.now() - startTime;
+                passageData[currentPassage].timeSpent += currentTime;
+                passageData[currentPassage].completed = true;
+                isRunning = false;
+            }
+        });
+
+        resetBtn.addEventListener('click', function() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            elapsedTime = 0;
+            startTime = null;
+            stopwatchDisplay.textContent = '00:00.0';
+            startBtn.textContent = 'Start';
+            
+            // Reset current passage time
+            passageData[currentPassage].timeSpent = 0;
+        });
+
+        // Generate Report
+        reportBtn.addEventListener('click', async function() {
+            const studentName = studentNameInput.value.trim() || 'Student';
+            const reportData = {
+                studentName: studentName,
+                date: new Date().toLocaleDateString('en-GB', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                passages: passageData
+            };
+
+            // Use printable report (works without server - perfect for GitHub Pages)
+            openPrintableReport(reportData);
+        });
+
+        // Fallback: Create printable HTML report
+        function openPrintableReport(data) {
+            const printWindow = window.open('', '_blank');
+            
+            let html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Fresh Start Assessment Report</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            max-width: 800px;
+                            margin: 40px auto;
+                            padding: 20px;
+                            line-height: 1.6;
+                        }
+                        h1 { color: #333; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; }
+                        h2 { color: #4CAF50; margin-top: 30px; }
+                        .header-info { margin: 20px 0; font-size: 14px; }
+                        .passage-section { margin: 30px 0; padding: 20px; background: #f9f9f9; border-left: 4px solid #4CAF50; }
+                        .time { font-weight: bold; color: #333; }
+                        .unknown-words { margin-top: 10px; }
+                        .word-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+                        .word-tag { background: #ff9800; color: white; padding: 4px 12px; border-radius: 4px; font-size: 14px; }
+                        .summary { margin-top: 40px; padding: 20px; background: #e8f5e9; border-radius: 8px; }
+                        @media print {
+                            body { margin: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Fresh Start Assessment Report</h1>
+                    <div class="header-info">
+                        <strong>Student:</strong> ${data.studentName}<br>
+                        <strong>Date:</strong> ${data.date}
+                    </div>
+            `;
+
+            let totalTime = 0;
+            let totalUnknownWords = 0;
+
+            data.passages.forEach(passage => {
+                if (passage.completed || passage.unknownWords.length > 0) {
+                    const minutes = Math.floor(passage.timeSpent / 60000);
+                    const seconds = Math.floor((passage.timeSpent % 60000) / 1000);
+                    const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    totalTime += passage.timeSpent;
+                    totalUnknownWords += passage.unknownWords.length;
+
+                    html += `
+                        <div class="passage-section">
+                            <h2>${passage.title}</h2>
+                            <div class="time">Time: ${timeString}</div>
+                            <div class="unknown-words">
+                                <strong>Unknown Words (${passage.unknownWords.length}):</strong>
+                                ${passage.unknownWords.length > 0 ? 
+                                    `<div class="word-list">${passage.unknownWords.map(w => `<span class="word-tag">${w}</span>`).join('')}</div>` 
+                                    : '<div>None recorded</div>'
+                                }
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            const totalMinutes = Math.floor(totalTime / 60000);
+            const totalSeconds = Math.floor((totalTime % 60000) / 1000);
+            const totalTimeString = `${totalMinutes}:${totalSeconds.toString().padStart(2, '0')}`;
+
+            html += `
+                    <div class="summary">
+                        <h2>Summary</h2>
+                        <strong>Total Time:</strong> ${totalTimeString}<br>
+                        <strong>Total Unknown Words:</strong> ${totalUnknownWords}
+                    </div>
+                    <div class="no-print" style="margin-top: 30px; text-align: center;">
+                        <button onclick="window.print()" style="padding: 12px 24px; font-size: 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Print / Save as PDF</button>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            printWindow.document.write(html);
+            printWindow.document.close();
+        }
+
+        // Initialize
+        displayPassage();
+    </script>
+</body>
+</html>
